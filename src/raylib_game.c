@@ -21,6 +21,8 @@
 #include <stdio.h>                          // Required for: printf()
 #include <stdlib.h>                         // Required for: 
 #include <string.h>                         // Required for: 
+#include <math.h>
+#include <raymath.h>
 
 //----------------------------------------------------------------------------------
 // Defines and Macros
@@ -34,6 +36,7 @@
     #define LOG(...)
 #endif
 
+#define PLAYER_SIZE 40
 //----------------------------------------------------------------------------------
 // Types and Structures Definition
 //----------------------------------------------------------------------------------
@@ -44,6 +47,10 @@ typedef enum {
     SCREEN_ENDING
 } GameScreen;
 
+typedef struct Player {
+    Vector2 position;
+    float speed;
+} Player;
 // TODO: Define your custom data types here
 
 //----------------------------------------------------------------------------------
@@ -61,7 +68,31 @@ static RenderTexture2D target = { 0 };  // Render texture to render our game
 //----------------------------------------------------------------------------------
 static void UpdateDrawFrame(void);      // Update and Draw one frame
 
-//------------------------------------------------------------------------------------
+double getAngleDeg(Vector2 p1, Vector2 p2) {
+    double thing1 = p2.x - p2.x;
+    double thing2 = p2.y - p1.y;
+    double angle_rad = atan2(thing1, thing2);
+    double angle_deg = angle_rad * (180.0 / PI);
+    return angle_deg;
+}
+
+double getAngleRad(Vector2 p1, Vector2 p2) {
+    double thing1 = p2.x - p2.x;
+    double thing2 = p2.y - p1.y;
+    double angle_rad = atan2(thing1, thing2);
+    double angle_deg = angle_rad * (180.0 / PI);
+    return angle_rad;
+}
+
+Vector2 getPointOnCircle(float radius, Vector2 p1, Vector2 p2) {
+    float cx, cy;
+    double angle_rad = getAngleRad(p1, p2);
+    cx = radius * cos(angle_rad);
+    cy = radius * sin(angle_rad);
+    return (Vector2){cx,cy};
+}
+
+//----------------------- -------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
 int main(void)
@@ -72,8 +103,12 @@ int main(void)
 
     // Initialization
     //--------------------------------------------------------------------------------------
-    InitWindow(screenWidth, screenHeight, "testing github stuff");
-    
+    InitWindow(screenWidth, screenHeight, "v0.0.1");
+    Player player = { 0 };
+    player.position = (Vector2){ screenWidth / 2 , screenHeight / 2 };
+    player.speed = 0;
+    //Rectangle wand = { 400, 400, 20, 40};
+    //Vector2 mousePos;
     // TODO: Load resources / Initialize variables at this point
     
     // Render texture to draw full screen, enables screen scaling
@@ -90,7 +125,34 @@ int main(void)
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button
     {
-        UpdateDrawFrame();
+        //mousePos = (Vector2){GetMouseX(), GetMouseY()};
+        BeginTextureMode(target);
+        ClearBackground(RAYWHITE);
+        // TODO: Draw your game screen here
+        Vector2 wandPos = Vector2Rotate(player.position, Vector2Angle(player.position, GetMousePosition()));
+        //wandPos.x += player.position.x / 4;
+       // wandPos.y += player.position.y / 4;
+        //DrawText(result, screenWidth / 2, (screenHeight / 2) + 50, 30, BLACK);
+        printf("%f", player.position.y);
+        EndTextureMode();
+    
+        // Render to screen (main framebuffer)
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+        
+        // Draw render texture to screen, scaled if required
+        DrawTexturePro(target.texture, (Rectangle){ 0, 0, (float)target.texture.width, -(float)target.texture.height }, (Rectangle){ 0, 0, (float)target.texture.width, (float)target.texture.height }, (Vector2){ 0, 0 }, 0.0f, WHITE);
+        
+
+        Rectangle playerRect = {player.position.x, player.position.y, 40.0f, 40.0f};
+        DrawRectanglePro(playerRect, player.position, 0.0f, RED);
+        DrawCircleLinesV(player.position, 50.0f, BLUE);
+        DrawCircleV(wandPos, 5, ORANGE);
+        //Vector2Rotate(player.position, Vector2Angle(player.position, GetMousePosition()));
+
+        // TODO: Draw everything that requires to be drawn at this point, maybe UI?
+        EndDrawing();
+
     }
 #endif
 
@@ -123,11 +185,8 @@ void UpdateDrawFrame(void)
     // it could be useful for scaling or further shader postprocessing
     BeginTextureMode(target);
         ClearBackground(RAYWHITE);
-        
         // TODO: Draw your game screen here
-        DrawText("Welcome to raylib NEXT gamejam!", 150, 140, 30, BLACK);
-        DrawRectangleLinesEx((Rectangle){ 0, 0, screenWidth, screenHeight }, 16, BLACK);
-        
+        DrawText("build test", screenWidth / 2, screenHeight / 2, 30, BLACK);
     EndTextureMode();
     
     // Render to screen (main framebuffer)
@@ -135,7 +194,7 @@ void UpdateDrawFrame(void)
         ClearBackground(RAYWHITE);
         
         // Draw render texture to screen, scaled if required
-        DrawTexturePro(target.texture, (Rectangle){ 0, 0, (float)target.texture.width, -(float)target.texture.height }, (Rectangle){ 0, 0, (float)target.texture.width, (float)target.texture.height }, (Vector2){ 0, 0 }, 0.0f, WHITE);
+        
 
         // TODO: Draw everything that requires to be drawn at this point, maybe UI?
 
