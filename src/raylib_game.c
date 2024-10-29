@@ -80,6 +80,7 @@ static RenderTexture2D target = { 0 };  // Render texture to render our game
 //----------------------------------------------------------------------------------
 static void UpdateDrawFrame(void);      // Update and Draw one frame
 
+<<<<<<< HEAD
 Vector2 getTargetRoundPoint(Vector2 p, Vector2 t, float radius) {
     Vector2 radiusVec = Vector2Subtract(t, p);
     Vector2 normVec = Vector2Normalize(radiusVec);
@@ -88,6 +89,35 @@ Vector2 getTargetRoundPoint(Vector2 p, Vector2 t, float radius) {
     return lastVec;
 }
 
+=======
+double getAngleDeg(Vector2 p1, Vector2 p2) {
+    double thing1 = p2.x - p1.x;
+    double thing2 = p2.y - p1.y;
+    double angle_rad = atan2(thing1, thing2);
+    double angle_deg = angle_rad * (180.0 / PI);
+    return angle_deg;
+}
+
+double getAngleRad(Vector2 p1, Vector2 p2) {
+    double thing1 = p2.x - p1.x;
+    double thing2 = p2.y - p1.y;
+    double angle_rad = atan2(thing1, thing2);
+    double angle_deg = angle_rad * (180.0 / PI);
+    return angle_rad;
+}
+
+Vector2 getPointOnCircle(float radius, Vector2 p1, Vector2 p2) {
+    float cx, cy;
+    double angle_rad = getAngleRad(p1, p2);
+    cx = radius * cos(angle_rad);
+    cy = radius * sin(angle_rad);
+    return (Vector2){cx,cy};
+}
+
+//----------------------- -------------------------------------------------------------
+// Program main entry point
+//------------------------------------------------------------------------------------
+>>>>>>> e81b1d1 (yuh)
 int main(void)
 {
 #if !defined(_DEBUG)
@@ -125,6 +155,15 @@ int main(void)
     {
         BeginTextureMode(target);
         ClearBackground(RAYWHITE);
+<<<<<<< HEAD
+=======
+        // TODO: Draw your game screen here
+        Vector2 wandPos = getPointOnCircle(50.0f, player.position, GetMousePosition());
+        //DrawText(result, screenWidth / 2, (screenHeight / 2) + 50, 30, BLACK);
+        Vector2 radiusVec = Vector2Subtract(GetMousePosition(), player.position);
+        Vector2 normVec = Vector2Normalize(radiusVec);
+        Vector2 bigVec = Vector2Scale(normVec, 50.0f);
+>>>>>>> e81b1d1 (yuh)
         EndTextureMode();
 
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
@@ -136,6 +175,7 @@ int main(void)
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
+<<<<<<< HEAD
         DrawRectangleRec(playerRect, RED);
         DrawCircleLinesV(player.position, 50.0f, BLUE);
         DrawRectanglePro(wand, (Vector2){ 0, 0 }, 0.0f, BLUE);
@@ -143,6 +183,19 @@ int main(void)
         DrawCircleV(getTargetRoundPoint(player.position, GetMousePosition(), 50.0f), 10.0f, ORANGE);
         DrawRectangleRec(enemy.collision, BLUE);
         DrawRectangleRec(mouse.collision, BLACK);
+=======
+        
+        
+        Rectangle playerRect = {player.position.x, player.position.y, 40.0f, 40.0f};
+        DrawRectanglePro(playerRect, player.position, 0.0f, RED);
+        DrawCircleLinesV(player.position, 50.0f, BLUE);
+
+        DrawCircleV(Vector2Add(bigVec, player.position), 10.0f, ORANGE);
+
+
+        //DrawLine(player.position.x, player.position.y, getPointOnCircle(20.0f, player.position, GetMousePosition()).x, getPointOnCircle(20.0f, player.position, GetMousePosition()).y, BLACK);
+        //Vector2Rotate(player.position, Vector2Angle(player.position, GetMousePosition()));
+>>>>>>> e81b1d1 (yuh)
 
         EndDrawing();
 
