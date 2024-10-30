@@ -51,6 +51,18 @@ typedef struct Player {
     Vector2 position;
     float speed;
 } Player;
+
+typedef struct Enemy {
+    Vector2 position;
+    float speed;
+    bool alive; 
+    Rectangle collision;
+} Enemy;
+
+typedef struct MouseCol {
+    Rectangle collision;
+} MouseCol;
+
 // TODO: Define your custom data types here
 
 //----------------------------------------------------------------------------------
@@ -93,6 +105,16 @@ int main(void)
     
     target = LoadRenderTexture(screenWidth, screenHeight);
     SetTextureFilter(target.texture, TEXTURE_FILTER_BILINEAR);
+    MouseCol mouse;
+    mouse.collision.height = 10;
+    mouse.collision.width = 10;
+    Enemy enemy = { 0 };
+    enemy.collision.x = 40;
+    enemy.collision.y = 300;
+    enemy.collision.width = 40;
+    enemy.collision.height = 40;
+
+    
 
 #if defined(PLATFORM_WEB)
     emscripten_set_main_loop(UpdateDrawFrame, 60, 1);
@@ -104,15 +126,23 @@ int main(void)
         BeginTextureMode(target);
         ClearBackground(RAYWHITE);
         EndTextureMode();
-    
+
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            DrawText("%i\n", GetMouseX(), GetMouseY(), 15, BLACK);
+        }
+        mouse.collision.x = GetMouseX() - (mouse.collision.width / 2);
+        mouse.collision.y = GetMouseY() - (mouse.collision.height / 2);
+
+
         BeginDrawing();
         ClearBackground(RAYWHITE);
-        
         DrawRectangleRec(playerRect, RED);
         DrawCircleLinesV(player.position, 50.0f, BLUE);
         DrawRectanglePro(wand, (Vector2){ 0, 0 }, 0.0f, BLUE);
 
         DrawCircleV(getTargetRoundPoint(player.position, GetMousePosition(), 50.0f), 10.0f, ORANGE);
+        DrawRectangleRec(enemy.collision, BLUE);
+        DrawRectangleRec(mouse.collision, BLACK);
 
         EndDrawing();
 
